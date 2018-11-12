@@ -27,6 +27,7 @@ library(Hmisc)
 library(microbenchmark)
 library(knitr)
 library(shinythemes)
+library(shinyWidgets)
 library(rgdal)
 ```
 
@@ -69,7 +70,6 @@ data_subset[is.na(data_subset),]
 
 # Create a flat file using the gather() function.
 ```{r flat_file}
-colnames(data_subset)[6] <- "Prod_one_tho_ton"
 flat_file <- gather(data_subset, "Year", "Prod_one_tho_ton", 5:57)
 print(flat_file)
 ```
@@ -79,6 +79,14 @@ Remove the letter Y from Year elements
 
 flat_file$Year <- gsub("Y", "",flat_file$Year)
 print(flat_file)
+```
+```{r}
+flat_file2 <- flat_file
+flat_file2
+```
+
+```{r}
+flat_file[flatfile]
 ```
 
 Transform all columns except the Production column into factors. This will make ploting graphs easier.
@@ -90,86 +98,48 @@ flat_file$Food_Sub_Category <- as.factor(flat_file$Food_Sub_Category)
 flat_file$Year <- as.factor(flat_file$Year)
 ```
 
-# Use group_by function to group the file by year and sum the # of 1,000 tons.
-```{r group_by}
-group_data <- flat_file %>%
-  group_by(Year,Region) %>%
-  summarise("Production_one_tho_tons"=n())
-print(group_data)
-```
-```{r}
-p<-ggplot(data=flat_file, aes(Year, weight=Prod_one_tho_ton)) + geom_bar()
-ggplotly(p)
-```
+
 
 
 Shiny App
-```{r shiny app}
-library(shiny)
 
-ui <- fluidPage(
-        sidebarLayout(
-                sidebarPanel(tabPanel("Global Food Production",
-                                     radioButtons("rb_purpose", "Select Purpose of Food", choices = unique(flat_file$Element),selected = unique(flat_file$Element)[1]),
-                                      selectInput("si_food","Select Food Category",choices = unique(flat_file$Food_Sub_Category,selected = "Choose Food Category",inline = FALSE)),
-                                      sliderInput("sl_year","Years", min = 1962, max = 2013, value =c(1962,2013), sep ="" ))),
-                mainPanel(
-                  tabsetPanel(
-                                tabPanel("Bar Graph",
-                                        h2("Average Production"),
-                                        plotlyOutput("bar")),
-                                tabPanel("Line Graph",
-                                        h2("History of Production"),
-                                        plotlyOutput("bar")),
-                                tabPanel("Data Table", 
-                                         h2("Data Table"),
-                                         dataTableOutput(outputId = "table")
-                                        )
-                                    )
-                )
-        )
-
-)
-server <- function(input, output, session) {
-        filtered_data <- reactive({filter(flat_file, Element == input$rb_purpose)})
-        observe({
-                updateR(session,"si_food", choices = unique(filtered_data()$Food_Sub_Category))
-                })
-          
-}
-
-shinyApp(ui, server)
+Variables for shiny
+```{r shiny variables}
+regions <- unique(flat_file$Region)
+food_cat <- unique(flat_file$Food_Sub_Category)
+countries <- unique(flat_file2$Area)
 ```
 
+Shiny code
 ```{r}
 # Define UI for application that plots features of movies
-ui <- fluidPage(
+ui <- shinyUI(
+    navbarPage("Page Title",
+               tabPanel("Panel 1",
   
   # Sidebar layout with a input and output definitions
   sidebarLayout(
     
     # Inputs
     sidebarPanel(
-      tabPanel("Global Food Production",
-        
+        tags$h3("List of Input"),
         radioButtons(inputId = "purpose", 
                      label = "Intended use of Goods Produced", 
                      choices =c("Human Consumption" = "Food",
                                 "Animal Consumption" = "Feed"),
                      selected = "Food"),
         
-        selectInput(inputId = "region",
+        pickerInput(inputId = "region",
                     label = "Global Region:",
-                    choices = unique(flat_file$Region),
-                    selected = unique(flat_file$Region)[1],
+                    choices = regions,
+                    options = list(`actions-box` = TRUE),
                     multiple = TRUE),
         
-        selectInput(inputId = "group",
+        pickerInput(inputId = "group",
                     label = "Food Category:",
-                    choices = unique(flat_file$Food_Sub_Category),
-                    selected = unique(flat_file$Food_Sub_Category)[1],
+                    choices = food_cat,
+                    options = list(`actions-box` = TRUE),
                     multiple = TRUE)
-                    )
                   ),
       
       # Outputs
@@ -185,9 +155,60 @@ ui <- fluidPage(
                   )
                 )
               )
+            ),
+  
+                tabPanel("Panel 2",
+  
+  # Sidebar layout with a input and output definitions
+  sidebarLayout(
+    
+    # Inputs
+    sidebarPanel(
+        tags$h3("List of Input"),
+        radioButtons(inputId = "purpose2", 
+                     label = "Intended use of Goods Produced", 
+                     choices =c("Human Consumption" = "Food",
+                                "Animal Consumption" = "Feed"),
+                     selected = "Food"),
+        
+        pickerInput(inputId = "group2",
+                    label = "Food Category:",
+                    choices = food_cat,
+                    options = list(`actions-box` = TRUE),
+                    multiple = TRUE),
+        
+        pickerInput(inputId = "region2",
+                    label = "Global Region:",
+                    choices = regions,
+                    options = list(`actions-box` = TRUE),
+                    multiple = TRUE),
+        
+        pickerInput(inputId = "country",
+                    label = "Country:",
+                    choices = countries,
+                    options = list(`actions-box` = TRUE),
+                    multiple = TRUE)
+                  ),
+      
+      # Outputs
+      mainPanel(
+        tabsetPanel(
+          tabPanel("Bar Plot",
+                   h2("Total Production"),
+                   plotlyOutput(outputId = "barplot2")),
+          tabPanel("Data Table",
+                  h2("Data Table"),
+                  dataTableOutput(outputId = "table2")
+                   )
+                    )
+                )
+              )
             )
+    )
+)
 # Define server function required to create the scatterplot
 server <- function(input, output,session) {
+### Tab 1
       filtered_data <- reactive({filter(flat_file, Element == input$purpose)})
       observe({
                 updateSelectInput(session,"region", choices = unique(filtered_data()$Region))
@@ -206,9 +227,34 @@ server <- function(input, output,session) {
           ggplotly(p)   
    }
    )
- }
+      
+     output$barplot2 <- renderPlotly(
+     {
+          p<-ggplot(filtered_data_7(), aes(Year, weight=Prod_one_tho_ton)) + geom_bar()
+          ggplotly(p)   
+   }
+   ) 
+#### Tab 2      
+      filtered_data_4 <- reactive({filter(flat_file2, Element ==input$purpose2)})
+      observe({
+                updateSelectInput(session,"group2", choices = unique(filtered_data_4()$Food_Sub_Category))
+      })
+      
+      filtered_data_5 <- reactive({filter(filtered_data_4(), Food_Sub_Category %in% input$group2)})
+      observe({
+                updateSelectInput(session,"region2", choices = unique(filtered_data_5()$Region))
+      })
+      
+       filtered_data_6 <- reactive({filter(filtered_data_5(), Region %in% input$region2)})
+      observe({
+                updateSelectInput(session,"country", choices = unique(filtered_data_6()$Area))
+      })
+      
+      filtered_data_7 <- reactive({filter(filtered_data_6(),Area %in% input$country)}) 
+      
+}
 
 # Create the Shiny app object
 shinyApp(ui, server)
 ```
-     filtered_data_2 <- reactive({filter(filtered_data(), Region %in% input$region)})
+   
