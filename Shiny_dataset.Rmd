@@ -57,7 +57,6 @@ print(joined_data)
 
 joined_data2 <- left_join(joined_data,categories,by = c("Item" = "Items"))
 print(joined_data2)
-
 ```
 
 Remove and row with an NA
@@ -116,16 +115,26 @@ regions <- sort(unique(flat_file$Region))
 food_cat <- sort(unique(flat_file$Food_Sub_Category))
 ```
 
-```{r}
+Bring in GGPlot Map data and bring in Region from my dataset
+```{r map data}
 flat_file_subset <- flat_file[,c("Area","Region")]
 data_dedup2 <- distinct(flat_file_subset)
 map_world <- map_data(map="world")
 map_world_tbl <- as_tibble(map_world)
 map_world2 <- left_join(map_world_tbl,data_dedup2,by = c("region" = "Area"))
-map_world3 <- distinct(map_world2)
-map_world4 <- map_world3[,c("long","lat","region","Region")]
-map_world5 <- map_world4[complete.cases(map_world4),]
-map_world5
+map_world_fin <- distinct(map_world2)
+
+
+map_world_fin[map_world_fin$region=="Russia",]
+```
+
+Test map
+```{r test map}
+       g <-ggplot()
+       g <- g + theme(legend.position="none")
+       g <- g + geom_map(data=map_world_fin, map=map_world_fin, aes(map_id=region, x=long, y=lat, fill="white"))
+       g
+
 ```
 
 Shiny code
@@ -247,19 +256,19 @@ server <- function(input, output,session) {
    )
 
 ### Data for
-      map_plot1 <- reactive({filter(map_world5,Region %in% input$region)})
+      map_plot1 <- reactive({filter(map_world_fin,Region %in% input$region)})
       
-### Tab 1 map      
-      output$map1 <- renderPlotly(
-     {
-          g <-ggplot() 
-          g <- g + theme(legend.position="none")
-          g <- g + geom_map(data=map_plot1(), map=map_world5, aes(map_id=region, x=long, y=lat, fill="white"))
-          print(g) 
-          
+## Tab 1 map
+   output$map1 <- renderPlotly(
+  {
+       g <-ggplot()
+       g <- g + theme(legend.position="none")
+       g <- g + geom_map(data=map_plot1(), map=map_plot1(), aes(map_id=region, x=long, y=lat, fill="white"))
+       print(g)
 
-   }
-   )      
+
+}
+)
                
 }
 
