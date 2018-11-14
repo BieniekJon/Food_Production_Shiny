@@ -32,8 +32,9 @@ library(shinyWidgets)
 library(rgdal)
 library(maps)
 library(rworldmap)
+library(DT)
+library(scales)
 ```
-
 
 #Import Data
 ```{r import data}
@@ -93,6 +94,7 @@ Remove the letter Y from Year elements
 flat_all_yrs$Year <- gsub("Y", "",flat_all_yrs$Year)
 print(flat_all_yrs)
 ```
+
 Subset the years so the visualizations are more manageable
 ```{r subset years}
 flat_file <- flat_all_yrs[flat_all_yrs$Year>=1993,]
@@ -115,91 +117,78 @@ regions <- sort(unique(flat_file$Region))
 food_cat <- sort(unique(flat_file$Food_Sub_Category))
 ```
 
-Bring in GGPlot Map data and bring in Region from my dataset
-```{r map data}
-flat_file_subset <- flat_file[,c("Area","Region")]
-data_dedup2 <- distinct(flat_file_subset)
-map_world <- map_data(map="world")
-map_world_tbl <- as_tibble(map_world)
-map_world2 <- left_join(map_world_tbl,data_dedup2,by = c("region" = "Area"))
-map_world_fin <- distinct(map_world2)
-
-
-map_world_fin[map_world_fin$region=="Russia",]
-```
-
-Test map
-```{r test map}
-       g <-ggplot()
-       g <- g + theme(legend.position="none")
-       g <- g + geom_map(data=map_world_fin, map=map_world_fin, aes(map_id=region, x=long, y=lat, fill="white"))
-       g
-
-```
-
 Shiny code
-```{r}
+```{r shiny app}
 # Define UI for application that plots features of movies
-ui <- shinyUI(
-    navbarPage("Global Food and Feed Production",
-               tabPanel("Insights",
+ui <- shinyUI( 
+    navbarPage("Global Food and Feed Production",   
+               
+               setBackgroundColor(
+    color = c("white", "silver"),
+    gradient = "radial",
+    direction = c("top", "left")
+                                  ),
+               
+    tabPanel("Insights",
+                        
+            fluidRow(
   
   # Sidebar layout with a input and output definitions
-  sidebarLayout(
-    
     # Inputs
-    sidebarPanel(
-        tags$h3("Inputs"),
-        radioButtons(inputId = "purpose", 
-                     label = "Intended use of Goods Produced", 
+    column(4,
+           div(style = "padding: 20px 100px",
+        pickerInput(inputId = "purpose", 
+                     label = "Intended use of Goods Produced:", 
                      choices =c("Human Consumption" = "Food",
                                 "Animal Consumption" = "Feed"),
-                     selected = "Food"),
-        
+                     options = list(`actions-box` = TRUE),
+                     multiple = TRUE))
+    ),
+    
+    column(4,
+           div(style = "padding: 20px 100px",
         pickerInput(inputId = "region",
                     label = "Global Regions:",
                     choices = regions,
                     options = list(`actions-box` = TRUE),
-                    multiple = TRUE),
-        
+                    multiple = TRUE))
+    ),
+    
+    column(4,
+           div(style = "padding: 20px 100px",
         pickerInput(inputId = "group",
                     label = "Food/Feed Category:",
                     choices = food_cat,
                     options = list(`actions-box` = TRUE),
-                    multiple = TRUE)
-                  ),
-      
+                    multiple = TRUE))
+    ),            
+        
       # Outputs
-      mainPanel(
         tabsetPanel(
           tabPanel("Stacked by Region",
-                   h2("Total Production"),
-                   plotlyOutput(outputId = "barplot"),
-                   plotlyOutput(outputId = "map1")),
+                   plotlyOutput(outputId = "barplot",width = "100%", height = "500px")),
           tabPanel("Stacked by Food Category",
-                   h2("Total Production"),
-                   plotlyOutput(outputId = "barplot2")),
+                   plotlyOutput(outputId = "barplot2",width = "100%", height = "500px")),
           tabPanel("Data Table",
-                  h2("Data Table"),
-                  dataTableOutput(outputId = "table")
+                  DT::dataTableOutput("table")
                     )
                   )
                 )
-              )
-            ),
+               ),
+
   
-      # Will be a Read Me
-                tabPanel("README"
-  
-                 
-                )    
+# Will be a Read Me
+                tabPanel("README",
+                         htmlOutput("text1")
+                         )
               )
-            )
+)
+            
 # Define server function required to create the scatterplot
 server <- function(input, output,session) {
   
 ### reactive filtered data from inputs 
-      filtered_data <- reactive({filter(flat_file, Element == input$purpose)})
+      filtered_data <- reactive({filter(flat_file, Element %in% input$purpose)})
       observe({
                 updateSelectInput(session,"region", 
                                   choices = unique(filtered_data()$Region))
@@ -223,23 +212,25 @@ server <- function(input, output,session) {
                                       group_by(Year,Food_Sub_Category) %>% 
                                       summarise(sum = sum(Prod_one_tho_ton))})
 
-      ### Tab 1 plot 
+### Tab 1 plot 
       output$barplot <- renderPlotly(
      {
           p<-ggplot(plot_data1(), 
                     aes_string(x=plot_data1()$Year, 
                                y=plot_data1()$sum, 
                                fill=(plot_data1()$Region))) +
+            theme_minimal() +
             geom_bar(stat="identity") +
+            scale_y_continuous(labels = comma) +
             labs(title = "Global Production", 
-                 subtitle = "Segmented by Region", 
+                 subtitle = "Segmented by Region",
+                 fill="",
                  x = "Years", 
                  y = "Tons(one thousands)" )
           ggplotly(p)   
    }
    )
       
-
 ### Tab 2 plot      
       output$barplot2 <- renderPlotly(
      {
@@ -247,31 +238,56 @@ server <- function(input, output,session) {
                     aes_string(x=plot_data2()$Year, 
                                y=plot_data2()$sum, 
                                fill=(plot_data2()$Food_Sub_Category))) +
-            geom_bar(stat="identity") + 
+            theme_minimal() +
+            geom_bar(stat="identity") +
+            scale_y_continuous(labels = comma) +
             labs(title = "Global Production", 
-                 subtitle = "Segmented by Food Category", 
-                 x = "Years", y = "Tons(one thousands)" )
+                 subtitle = "Segmented by Food Category",
+                 fill="",
+                 x = "Years", 
+                 y = "Tons(one thousands)" )
           ggplotly(r)   
    }
    )
 
-### Data for
-      map_plot1 <- reactive({filter(map_world_fin,Region %in% input$region)})
-      
-## Tab 1 map
-   output$map1 <- renderPlotly(
-  {
-       g <-ggplot()
-       g <- g + theme(legend.position="none")
-       g <- g + geom_map(data=map_plot1(), map=map_plot1(), aes(map_id=region, x=long, y=lat, fill="white"))
-       print(g)
+### Table data - rename columns
+table_data <- reactive({filtered_data_3()})
+            
+### Table
+ output$table <- DT::renderDataTable({
+    DT::datatable(table_data(), options = list(lengthMenu = c(10, 30, 50), pageLength = 10))
+  })
+    
+### README tab
+output$text1 <- renderUI(
 
+    {
 
-}
-)
-               
+      HTML("<h3>About this Application</h3>
+      <p>This application consists of data from the United Nation's Food and Agriculture Organiation ('FAO'). A link to the FAO websit can be found at the bottome of this              page.</p>
+
+      <p>According to its website, the FAO is a specialized agency that leads international efforts to defeat hunger.The FAO currently has over 194 member states 
+        and works in over 130 countries. Many of these member states are featured in this app. For a complete list of countries included in this app please 
+        see the data table within the insights section.</p>
+
+      <p>This app was created to provide easy access to food and feed production data for over 174 countries. Food is defined as goods intended to be consumed by humans, While         feed is defined as goods intended to be consumed by animals.</p>
+
+      <p>The data included in this app covers the time period between 1993 and 2013.</p>
+
+      <p> To use the app simply navigate to the insights section and select the desired inputs. Once the inputs are selected two bar charts will be generated along with a table         of the charts underlying data. from the drop down lists within the insights section of the app.</p>
+
+      <p>Please enjoy this app!</p>")
+
+      }
+
+    )
+
 }
 
 # Create the Shiny app object
 shinyApp(ui, server)
 ```
+```{r}
+colnames(flat_file)
+```
+
