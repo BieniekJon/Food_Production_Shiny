@@ -1,0 +1,115 @@
+Items,Food Category,Food_Sub_Category
+Wheat and products,Crops,Grain
+Rice (Milled Equivalent),Crops,Grain
+Barley and products,Crops,Grain
+Maize and products,Crops,Grain
+Millet and products,Crops,Grain
+"Cereals, Other",Crops,Grain
+Potatoes and products,Crops,Vegetables
+Sugar cane,Crops,Sugars
+Sugar beet,Crops,Sugars
+Sugar (Raw Equivalent),Crops,Sugars
+"Sweeteners, Other",Crops Processed,Sugars
+Honey,Livestock Primary,Animal Products
+"Pulses, Other and products",Livestock Primary,Meats
+Nuts and products,Crops Processed,Seeds/Nuts
+Coconuts - Incl Copra,Crops,Fruit
+Sesame seed,Crops,Seeds/Nuts
+Olives (including preserved),Crops,Vegetables
+Soyabean Oil,Crops Processed,Oils
+Groundnut Oil,Crops Processed,Oils
+Sunflowerseed Oil,Crops Processed,Oils
+Rape and Mustard Oil,Crops Processed,Oils
+Cottonseed Oil,Crops Processed,Oils
+Palm Oil,Crops Processed,Oils
+Sesameseed Oil,Crops Processed,Oils
+Olive Oil,Crops Processed,Oils
+"Oilcrops Oil, Other",Crops Processed,Oils
+Tomatoes and products,Crops Processed,Vegetables
+"Vegetables, Other",Crops,Vegetables
+"Oranges, Mandarines",Crops,Fruit
+"Citrus, Other",Crops,Fruit
+Bananas,Crops,Fruit
+Apples and products,Crops Processed,Fruit
+Pineapples and products,Crops Processed,Fruit
+Dates,Crops,Fruit
+Grapes and products (excl wine),Crops Processed,Fruit
+"Fruits, Other",Crops,Fruit
+Coffee and products,Crops Processed,Seeds/Nuts
+Cocoa Beans and products,Crops Processed,Seeds/Nuts
+Tea (including mate),Crops,Tea/Spices
+Pepper,Crops,Tea/Spices
+"Spices, Other",Crops,Tea/Spices
+Wine,Crops Processed,Wine/Beer/Beverage
+Beer,Crops Processed,Wine/Beer/Beverage
+"Beverages, Alcoholic",Crops Processed,Wine/Beer/Beverage
+Bovine Meat,Livestock Primary,Meats
+Mutton & Goat Meat,Livestock Primary,Meats
+Poultry Meat,Livestock Primary,Meats
+"Meat, Other",Livestock Primary,Meats
+"Offals, Edible",Livestock Processed,Meats
+"Butter, Ghee",Livestock Processed,Animal Products
+Cream,Livestock Processed,Animal Products
+"Fats, Animals, Raw",Livestock Primary,Meats
+Eggs,Livestock Primary,Animal Products
+Milk - Excluding Butter,Livestock Processed,Animal Products
+Freshwater Fish,Livestock Primary,Meats
+Infant food,Crops Processed,Vegetables
+Cereals - Excluding Beer,Crops,Grain
+Starchy Roots,Crops,Vegetables
+Sugar Crops,Crops,Sugars
+Sugar & Sweeteners,Crops,Sugars
+Pulses,Crops,Vegetables
+Treenuts,Crops,Seeds/Nuts
+Oilcrops,Crops Processed,Oils
+Vegetable Oils,Crops Processed,Oils
+Vegetables,Crops,Vegetables
+Fruits - Excluding Wine,Crops,Fruit
+Stimulants,Crops,Tea/Spices
+Spices,Crops,Tea/Spices
+Alcoholic Beverages,Crops Processed,Wine/Beer/Beverage
+Meat,Livestock Primary,Meats
+Offals,Livestock Primary,Meats
+Animal fats,Livestock Primary,Meats
+"Fish, Seafood",Livestock Primary,Meats
+Rye and products,Crops Processed,Grain
+Oats,Crops,Grain
+Sorghum and products,Crops Processed,Grain
+Cassava and products,Crops Processed,Vegetables
+Sweet potatoes,Crops,Vegetables
+"Roots, Other",Crops,Vegetables
+Beans,Crops,Vegetables
+Peas,Crops,Vegetables
+Soyabeans,Crops,Vegetables
+Groundnuts (Shelled Eq),Crops,Seeds/Nuts
+Rape and Mustardseed,Crops,Seeds/Nuts
+"Oilcrops, Other",Crops Processed,Oils
+Maize Germ Oil,Crops Processed,Oils
+Onions,Crops,Vegetables
+"Lemons, Limes and products",Crops Processed,Fruit
+Grapefruit and products,Crops Processed,Fruit
+Plantains,Crops,Fruit
+Pimento,Crops,Vegetables
+"Beverages, Fermented",Crops Processed,Wine/Beer/Beverage
+Pigmeat,Livestock Processed,Meats
+"Fish, Body Oil",Livestock Processed,Animal Products
+"Fish, Liver Oil",Livestock Processed,Animal Products
+Demersal Fish,Livestock Primary,Meats
+Pelagic Fish,Livestock Primary,Meats
+"Marine Fish, Other",Livestock Primary,Meats
+Crustaceans,Livestock Primary,Meats
+Cephalopods,Livestock Primary,Meats
+"Molluscs, Other",Livestock Primary,Meats
+"Aquatic Animals, Others",Livestock Primary,Meats
+Aquatic Plants,Livestock Primary,Vegetables
+"Aquatic Products, Other",Livestock Primary,Meats
+Palm kernels,Crops Processed,Seeds/Nuts
+Coconut Oil,Crops Processed,Oils
+Cloves,Crops,Seeds/Nuts
+Palmkernel Oil,Crops Processed,Oils
+Yams,Crops,Vegetables
+Sunflower seed,Crops,Seeds/Nuts
+Cottonseed,Crops Processed,Seeds/Nuts
+Sugar non-centrifugal,Crops,Sugars
+Ricebran Oil,Crops Processed,Oils
+"Meat, Aquatic Mammals",Livestock Primary,Meats
